@@ -1,6 +1,5 @@
 package com.bitoasis.assignment.configuration;
 
-import com.bitoasis.assignment.bo.CoinBo;
 import com.bitoasis.assignment.client.CoinClient;
 import com.bitoasis.assignment.client.impl.AlternativeMeClientImpl;
 import com.bitoasis.assignment.manager.CoinManager;
@@ -15,8 +14,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-
-import java.util.List;
 
 @Configuration
 public class CoinConfiguration {
@@ -63,8 +60,8 @@ public class CoinConfiguration {
     }
 
     @Bean
-    RedisTemplate<String, List<CoinBo>> redisTemplate(@Value("${spring.redis.host}") String host, @Value("${spring.redis.port}") Integer port) {
-        RedisTemplate<String, List<CoinBo>> redisTemplate = new RedisTemplate<>();
+    RedisTemplate redisTemplate(@Value("${spring.redis.host}") String host, @Value("${spring.redis.port}") Integer port) {
+        RedisTemplate redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory(host, port));
         return redisTemplate;
     }

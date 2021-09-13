@@ -15,10 +15,10 @@ import java.util.concurrent.TimeUnit;
 @Component
 public class CachingRepositoryImpl implements CachingRepository {
 
-    private RedisTemplate<String, List<CoinBo>> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Autowired
-    public CachingRepositoryImpl(RedisTemplate<String, List<CoinBo> > redisTemplate) {
+    public CachingRepositoryImpl(RedisTemplate redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 

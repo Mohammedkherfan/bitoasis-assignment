@@ -4,6 +4,7 @@ import com.bitoasis.assignment.AssignmentApplication;
 import com.bitoasis.assignment.configuration.CoinConfiguration;
 import com.bitoasis.assignment.configuration.SecurityConfiguration;
 import com.bitoasis.assignment.configuration.UserConfiguration;
+import com.bitoasis.assignment.enums.CachingKey;
 import com.bitoasis.assignment.jpa.UserJpaRepository;
 import com.bitoasis.assignment.request.UserRegistrationRequest;
 import com.bitoasis.assignment.util.TestUtil;
@@ -12,8 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -35,6 +38,13 @@ public class TickerTest {
     private MockMvc mvc;
     @Autowired
     private UserJpaRepository userJpaRepository;
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Value("${spring.redis.port}")
+    private Integer port;
+    @Value("${spring.redis.host}")
+    private String host;
 
     private UserRegistrationRequest userRegistrationRequest;
 
@@ -52,11 +62,12 @@ public class TickerTest {
     @After
     public void tearDown() throws Exception {
         userJpaRepository.deleteAll();
+        redisTemplate.delete("BAT");
     }
 
     @Test
     public void whenCallFindTicker_AndUserNotAuthenticated_ThenShouldReturnUnauthorized() throws Exception {
-        ResultActions action = mvc.perform(get("/v1/ticker/BIT")
+        ResultActions action = mvc.perform(get("/v1/ticker/BAT")
                 .contentType(MediaType.APPLICATION_JSON));
         action
                 .andDo(print())
@@ -65,7 +76,7 @@ public class TickerTest {
 
     @Test
     public void whenCallFindTicker_AndTokenInvalidAuthenticated_ThenShouldReturnUnauthorized() throws Exception {
-        ResultActions action = mvc.perform(get("/v1/ticker/BIT").header("Authorization", "ascaf")
+        ResultActions action = mvc.perform(get("/v1/ticker/BAT").header("Authorization", "ascaf")
                 .contentType(MediaType.APPLICATION_JSON));
         action
                 .andDo(print())
@@ -74,7 +85,7 @@ public class TickerTest {
 
     @Test
     public void whenCallFindTicker_AndUserAuthenticated_ButEmailNotFound_ThenShouldReturnError() throws Exception {
-        ResultActions action1 = mvc.perform(get("/v1/ticker/BITSS").header("Authorization", "Basic " + TestUtil.decode("email@email.com", "123456789"))
+        ResultActions action1 = mvc.perform(get("/v1/ticker/BATSS").header("Authorization", "Basic " + TestUtil.decode("email@email.com", "123456789"))
                 .contentType(MediaType.APPLICATION_JSON));
         action1
                 .andDo(print())
@@ -96,7 +107,7 @@ public class TickerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", is(userRegistrationRequest.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email", is(userRegistrationRequest.getEmail())));
 
-        ResultActions action1 = mvc.perform(get("/v1/ticker/BITSS").header("Authorization", "Basic " + TestUtil.decode(userRegistrationRequest.getEmail(), userRegistrationRequest.getPassword())+"a")
+        ResultActions action1 = mvc.perform(get("/v1/ticker/BATSS").header("Authorization", "Basic " + TestUtil.decode(userRegistrationRequest.getEmail(), userRegistrationRequest.getPassword())+"a")
                 .contentType(MediaType.APPLICATION_JSON));
         action1
                 .andDo(print())
@@ -117,7 +128,7 @@ public class TickerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", is(userRegistrationRequest.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email", is(userRegistrationRequest.getEmail())));
 
-        ResultActions action1 = mvc.perform(get("/v1/ticker/BITSS").header("Authorization", "Basic " + TestUtil.decode(userRegistrationRequest.getEmail(), userRegistrationRequest.getPassword()))
+        ResultActions action1 = mvc.perform(get("/v1/ticker/BATSS").header("Authorization", "Basic " + TestUtil.decode(userRegistrationRequest.getEmail(), userRegistrationRequest.getPassword()))
                 .contentType(MediaType.APPLICATION_JSON));
         action1
                 .andDo(print())
@@ -138,7 +149,7 @@ public class TickerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.name", is(userRegistrationRequest.getName())))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.email", is(userRegistrationRequest.getEmail())));
 
-        ResultActions action1 = mvc.perform(get("/v1/ticker/BIT").header("Authorization", "Basic " + TestUtil.decode(userRegistrationRequest.getEmail(), userRegistrationRequest.getPassword()))
+        ResultActions action1 = mvc.perform(get("/v1/ticker/BAT").header("Authorization", "Basic " + TestUtil.decode(userRegistrationRequest.getEmail(), userRegistrationRequest.getPassword()))
                 .contentType(MediaType.APPLICATION_JSON));
         action1
                 .andDo(print())

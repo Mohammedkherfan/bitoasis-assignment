@@ -25,10 +25,8 @@ public class Encryption {
             key = sha.digest(key);
             key = Arrays.copyOf(key, 16);
             secretKey = new SecretKeySpec(key, "AES");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new UserException(ResponseCode.TECHNICAL_ERROR, "Error during set key");
         }
     }
 

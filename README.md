@@ -4,15 +4,15 @@
 
 ### Installation
 
-2. Clone the repo
+1. Clone the repo
    ```sh
    git clone https://github.com/Mohammedkherfan/bitoasis-assignment.git
    ```
-3. Install Redis docker container
+2. Install Redis docker container
    ```
    docker-compose up
    ```
-4. Start Application
+3. Start Application
    ```
    Run AssignmentApplication.class from assignment-api module
    ```
